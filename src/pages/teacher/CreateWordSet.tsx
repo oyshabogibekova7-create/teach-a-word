@@ -43,14 +43,38 @@ export default function CreateWordSet() {
     setLoading(true);
 
     try {
+      // Check if word set with this title already exists for this teacher
+      const { data: existingSet, error: checkError } = await supabase
+        .from("word_sets")
+        .select("id")
+        .eq("teacher_id", user?.id)
+        .eq("title", title.trim())
+        .maybeSingle();
+
+      if (checkError) {
+        console.error("Error checking existing word set:", checkError);
+        throw checkError;
+      }
+
+      if (existingSet) {
+        toast.error("You already have a word set with this title");
+        setLoading(false);
+        return;
+      }
+
+      // Create the word set
       const { data: wordSet, error: setError } = await supabase
         .from("word_sets")
-        .insert({ title, teacher_id: user?.id })
+        .insert({ title: title.trim(), teacher_id: user?.id })
         .select()
         .single();
 
-      if (setError) throw setError;
+      if (setError) {
+        console.error("Error creating word set:", setError);
+        throw setError;
+      }
 
+      // Insert words
       const wordsToInsert = filteredWords.map((word, index) => ({
         word_set_id: wordSet.id,
         word: word.trim(),
@@ -59,12 +83,16 @@ export default function CreateWordSet() {
 
       const { error: wordsError } = await supabase.from("words").insert(wordsToInsert);
 
-      if (wordsError) throw wordsError;
+      if (wordsError) {
+        console.error("Error inserting words:", wordsError);
+        throw wordsError;
+      }
 
       toast.success("Word set created successfully!");
       navigate("/teacher/dashboard");
     } catch (error: any) {
-      toast.error("Failed to create word set");
+      console.error("Failed to create word set:", error);
+      toast.error(error.message || "Failed to create word set");
     } finally {
       setLoading(false);
     }
