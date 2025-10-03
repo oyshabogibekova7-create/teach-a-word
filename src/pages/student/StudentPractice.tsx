@@ -125,31 +125,44 @@ export default function StudentPractice() {
     setLoading(true);
 
     try {
+      console.log("Submitting answers:", { selectedWordSetId, studentName, finalAnswers });
+      
       const { data: submission, error: subError } = await supabase
         .from("submissions")
         .insert({
           word_set_id: selectedWordSetId,
-          student_name: studentName,
+          student_name: studentName.trim(),
         })
         .select()
         .single();
 
-      if (subError) throw subError;
+      if (subError) {
+        console.error("Submission error:", subError);
+        throw subError;
+      }
+
+      console.log("Submission created:", submission);
 
       const answersToInsert = finalAnswers.map((a) => ({
         submission_id: submission.id,
         word_id: a.word_id,
-        sentence: a.sentence,
+        sentence: a.sentence.trim(),
       }));
+
+      console.log("Inserting answers:", answersToInsert);
 
       const { error: answersError } = await supabase.from("answers").insert(answersToInsert);
 
-      if (answersError) throw answersError;
+      if (answersError) {
+        console.error("Answers error:", answersError);
+        throw answersError;
+      }
 
       toast.success("Great work! Your answers have been submitted.");
       setStep(5);
     } catch (error: any) {
-      toast.error("Failed to submit answers");
+      console.error("Submit error:", error);
+      toast.error(error.message || "Failed to submit answers");
     } finally {
       setLoading(false);
     }
