@@ -66,7 +66,8 @@ export default function StudentPractice() {
       .order("full_name");
 
     if (error) {
-      toast.error("Failed to load teachers");
+      console.error("Error loading teachers:", error);
+      toast.error("Failed to load teachers. Please refresh the page.");
     } else {
       setTeachers(data || []);
     }
