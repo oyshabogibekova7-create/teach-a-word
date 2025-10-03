@@ -14,7 +14,153 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      answers: {
+        Row: {
+          created_at: string | null
+          id: string
+          sentence: string
+          submission_id: string
+          word_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          sentence: string
+          submission_id: string
+          word_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          sentence?: string
+          submission_id?: string
+          word_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "answers_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answers_word_id_fkey"
+            columns: ["word_id"]
+            isOneToOne: false
+            referencedRelation: "words"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          full_name: string
+          id: string
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      submissions: {
+        Row: {
+          created_at: string | null
+          id: string
+          student_name: string
+          word_set_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          student_name: string
+          word_set_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          student_name?: string
+          word_set_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_word_set_id_fkey"
+            columns: ["word_set_id"]
+            isOneToOne: false
+            referencedRelation: "word_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      word_sets: {
+        Row: {
+          created_at: string | null
+          id: string
+          teacher_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          teacher_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          teacher_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "word_sets_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      words: {
+        Row: {
+          created_at: string | null
+          id: string
+          position: number
+          word: string
+          word_set_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          position: number
+          word: string
+          word_set_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          position?: number
+          word?: string
+          word_set_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "words_word_set_id_fkey"
+            columns: ["word_set_id"]
+            isOneToOne: false
+            referencedRelation: "word_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
